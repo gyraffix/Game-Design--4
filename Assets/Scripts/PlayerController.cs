@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -97,7 +98,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(jumpForce * Vector3.up, ForceMode.Impulse);
         wantsToJump = false;
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -166,5 +167,13 @@ public class PlayerController : MonoBehaviour
             else movingRight = false;
         }
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Hazard"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
