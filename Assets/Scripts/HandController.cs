@@ -68,6 +68,8 @@ public class HandController : MonoBehaviour
             if (!isHoldingHands)
             {
                 hj.connectedBody = null;
+                otherObj = null;
+
             }
             //hj.connectedAnchor = Hand.position - transform.position;
             //hj.connectedAnchor = otherHandObj.position - otherObj.position;
@@ -101,14 +103,22 @@ public class HandController : MonoBehaviour
         {
             otherObj = otherRB.transform;
             hj.connectedAnchor = otherHandObj.position - otherObj.position;
+            Debug.Log("here");
+            otherHand.transform.Rotate(Vector3.forward, otherObj.eulerAngles.z, Space.Self);
         }
         //if (other.attachedRigidbody.GetComponentInChildren<HingeJoint>().connectedBody == rb) return;
         //if (other.attachedRigidbody.GetComponentInChildren<HingeJoint>().connectedBody == parentRB) return;
         //if (isHoldingHands) 
-        if (parentRB.isKinematic) hj.connectedBody = otherRB;
 
-        
+
+        if (parentRB.isKinematic)
+        {
+            hj.connectedBody = otherRB;
+
+        }
+
+
+        }
+
+
     }
-
-
-}
