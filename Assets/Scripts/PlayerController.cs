@@ -137,6 +137,7 @@ public class PlayerController : MonoBehaviour
         if (isTouchingSurface && Input.GetKey(stickKey))
         {
             rb.isKinematic = true;
+            inOrbit = false;
             orbit.SetActive(true);
             isFrozen = true;
         }
@@ -144,6 +145,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.isKinematic = false;
             orbit.SetActive(false);
+            otherPlayer.GetComponent<PlayerController>().orbitClose = false;
             isFrozen = false;
         }
         if (isFrozen) return;
@@ -220,7 +222,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Hazard"))
+        if (other.CompareTag("Hazard") && !isFrozen)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }

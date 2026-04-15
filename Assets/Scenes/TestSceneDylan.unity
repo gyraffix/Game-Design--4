@@ -2165,7 +2165,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 0.001}
+  m_LocalScale: {x: 5, y: 5, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 577130586}
@@ -5757,7 +5757,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 0.0009999999}
+  m_LocalScale: {x: 5, y: 5, z: 0.0009999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1172402408}
@@ -13108,7 +13108,7 @@ PrefabInstance:
       objectReference: {fileID: 314062825}
     - target: {fileID: 2457565900717669880, guid: 0abcafa4eda88d944b84536818d7798a, type: 3}
       propertyPath: radius
-      value: 1.5
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2457565900717669880, guid: 0abcafa4eda88d944b84536818d7798a, type: 3}
       propertyPath: holdKey
@@ -13116,7 +13116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2457565900717669880, guid: 0abcafa4eda88d944b84536818d7798a, type: 3}
       propertyPath: moveSpeed
-      value: 30
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2457565900717669880, guid: 0abcafa4eda88d944b84536818d7798a, type: 3}
       propertyPath: otherPlayer
@@ -13285,7 +13285,7 @@ PrefabInstance:
       objectReference: {fileID: 894714552}
     - target: {fileID: 6727377129437420698, guid: a1e69a76b969cb84db26aad63fca8647, type: 3}
       propertyPath: radius
-      value: 1.5
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6727377129437420698, guid: a1e69a76b969cb84db26aad63fca8647, type: 3}
       propertyPath: holdKey
@@ -13293,7 +13293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6727377129437420698, guid: a1e69a76b969cb84db26aad63fca8647, type: 3}
       propertyPath: moveSpeed
-      value: 30
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6727377129437420698, guid: a1e69a76b969cb84db26aad63fca8647, type: 3}
       propertyPath: otherPlayer
