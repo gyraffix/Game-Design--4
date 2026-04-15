@@ -20,7 +20,11 @@ public class HandController : MonoBehaviour
     [SerializeField] public Rigidbody parentRB;
 
     [SerializeField] private KeyCode holdHandsKey;
+    [SerializeField] private KeyCode rotateClockwise;
+    [SerializeField] private KeyCode rotateAntiClockwise;
+    [SerializeField] private float rotateForce;
 
+    [SerializeField] private int rotateDirection;
 
 
     [SerializeField] private bool isHoldingHands;
@@ -35,13 +39,36 @@ public class HandController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isHoldingHands = Input.GetKeyUp(holdHandsKey) || Input.GetKey(holdHandsKey);
+        isHoldingHands = IsKeyPressed(holdHandsKey); // Input.GetKeyDown(holdHandsKey) || Input.GetKey(holdHandsKey);
+        if (IsKeyPressed(rotateAntiClockwise)) rotateDirection = 1;
+        else if (IsKeyPressed(rotateClockwise)) rotateDirection = -1;
+        else rotateDirection = 0;
+    }
+
+    private bool IsKeyPressed(KeyCode pKey)
+    {
+        return Input.GetKeyDown(pKey) || Input.GetKey(pKey);
     }
 
     private void FixedUpdate()
     {
+        if (rotateDirection != 0)
+        {
+            if (parentRB.isKinematic)
+            {
+                transform.Rotate(Vector3.forward * rotateDirection * rotateForce * Time.fixedDeltaTime);
+            }
+            else
+            {
+                parentRB.AddTorque(Vector3.forward * rotateDirection * rotateForce * Time.fixedDeltaTime);
+            }
+        }
         if (otherHandObj != null)
         {
+            if (!isHoldingHands)
+            {
+                hj.connectedBody = null;
+            }
             //hj.connectedAnchor = Hand.position - transform.position;
             //hj.connectedAnchor = otherHandObj.position - otherObj.position;
         }
@@ -51,6 +78,8 @@ public class HandController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.attachedRigidbody == null) return;
+
+        if (!isHoldingHands) return;
 
         HandController otherHand = other.attachedRigidbody.transform.GetComponentInChildren<HandController>();
         Rigidbody otherRB = otherHand.parentRB;
