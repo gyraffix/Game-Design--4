@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private GameObject orbit;
 
-    [SerializeField] private float radius;
+    [SerializeField] private float minRadius;
+    [SerializeField] private float maxRadius;
 
 
     [SerializeField] private KeyCode holdKey;
@@ -47,6 +48,8 @@ public class PlayerController : MonoBehaviour
 
     private LayerMask layerMask;
 
+    private Vector3 difference;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -59,8 +62,13 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(transform.position, Vector3.down, 0.55f, layerMask))
         {
             isGrounded = true;
+            rb.linearDamping = 2;
         }
-        else isGrounded = false;
+        else
+        {
+            rb.linearDamping = 0;
+            isGrounded = false;
+        }
     }
 
     private void CheckTouchingSurface()
@@ -108,13 +116,13 @@ public class PlayerController : MonoBehaviour
 
         if (movingLeft && inOrbit)
         {
-            MoveInOrbit(-moveSpeed);
+            MoveInOrbit(moveSpeed);
 
         }
 
         if (movingRight && inOrbit)
         {
-            MoveInOrbit(moveSpeed);
+            MoveInOrbit(-moveSpeed);
         }
 
     }
@@ -165,6 +173,9 @@ public class PlayerController : MonoBehaviour
 
         else
         {
+            if (inOrbit)
+            rb.linearVelocity = difference / Time.fixedDeltaTime;
+
             inOrbit = false;
             rb.useGravity = true;
         }
@@ -201,16 +212,17 @@ public class PlayerController : MonoBehaviour
     private void MoveInOrbit(float rotationAngle)
     {
         float tangle = Vector3.SignedAngle(Vector3.right, transform.position - otherPlayer.position, Vector3.forward);
+        float distance = (transform.position - otherPlayer.position).magnitude;
 
         angle = tangle;
 
         angle += rotationAngle * Time.fixedDeltaTime;
 
-        Vector3 rotatedPosition = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
+        Vector3 rotatedPosition = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * Mathf.Clamp(distance, minRadius, maxRadius);
 
         Vector3 newPosition = rotatedPosition + otherPlayer.position;
 
-        Vector3 difference = newPosition - transform.position;
+        difference = newPosition - transform.position;
 
         Debug.Log(difference);
 
