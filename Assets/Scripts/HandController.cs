@@ -14,6 +14,7 @@ public class HandController : MonoBehaviour
     [Header("Other obj")]
     [SerializeField] private Transform otherObj;
     [SerializeField] private Transform otherHandObj;
+    [SerializeField] private Rigidbody otherRigidBody;
     
     
     [Header("Other")]
@@ -69,13 +70,23 @@ public class HandController : MonoBehaviour
         {
             if (!isHoldingHands)
             {
-                hj.connectedBody = null;
-                otherObj = null;
-                otherHandObj = null;
+                DisconnectHands();
             }
+        }
+
+        if (!parentRB.isKinematic && otherObj != null && !otherRigidBody.isKinematic)
+        {
+            DisconnectHands();
         }
     }
 
+    private void DisconnectHands()
+    {
+        hj.connectedBody = null;
+        otherObj = null;
+        otherHandObj = null;
+        otherRigidBody = null;
+    }
 
     private void AttemptHandholding(Collider other)
     {
@@ -101,6 +112,7 @@ public class HandController : MonoBehaviour
         if (otherHandObj == null) otherHandObj = otherHand.Hand;
         if (otherObj == null)
         {
+            otherRigidBody = otherRB;
             otherObj = otherRB.transform;
             hj.connectedAnchor = otherHandObj.position - otherObj.position;
 
