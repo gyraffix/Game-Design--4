@@ -161,18 +161,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7861a99a11e6d4c901d16bef8eb8e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpKeyPlayer1: 119
-  jumpKeyPlayer2: 105
-  moveLeftKeyPlayer1: 97
-  moveLeftKeyPlayer2: 106
-  moveRightKeyPlayer1: 100
-  moveRightKeyPlayer2: 108
-  stickKeyPlayer1: 102
-  stickKeyPlayer2: 104
+  jumpKey: 119
+  moveLeftKey: 97
+  moveRightKey: 100
+  stickKey: 102
   playerNumber: 1
   moveForce: 5
   airMoveForce: 2
   jumpForce: 7
+  orbit: {fileID: 0}
+  isFrozen: 0
 --- !u!1 &3416737460648911988
 GameObject:
   m_ObjectHideFlags: 0

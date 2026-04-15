@@ -3,29 +3,43 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private KeyCode jumpKeyPlayer1;
-    [SerializeField] private KeyCode jumpKeyPlayer2;
+    [SerializeField] private KeyCode jumpKey;
+    [SerializeField] private KeyCode moveLeftKey;
+    [SerializeField] private KeyCode moveRightKey;
+    [SerializeField] private KeyCode stickKey;
 
-    [SerializeField] private KeyCode moveLeftKeyPlayer1;
-    [SerializeField] private KeyCode moveLeftKeyPlayer2;
 
-    [SerializeField] private KeyCode moveRightKeyPlayer1;
-    [SerializeField] private KeyCode moveRightKeyPlayer2;
-
-    [SerializeField] private KeyCode stickKeyPlayer1;
-    [SerializeField] private KeyCode stickKeyPlayer2;
-
-    [SerializeField][Range(1,2)] private int playerNumber;
+    [SerializeField][Range(1, 2)] private int playerNumber;
 
 
     [SerializeField] private float moveForce;
     [SerializeField] private float airMoveForce;
     [SerializeField] private float jumpForce;
 
+    [SerializeField] private GameObject orbit;
+
+    [SerializeField] private float radius;
+
+
+    [SerializeField] private KeyCode holdKey;
+
+
+
+    [SerializeField] private float angle;
+
+
+    [SerializeField] private float moveSpeed;
+
+
+    [SerializeField] private Transform otherPlayer;
+
     private Rigidbody rb;
 
     private bool isGrounded;
     private bool isTouchingSurface;
+    public bool isFrozen;
+    public bool inOrbit;
+    public bool orbitClose;
 
     private bool wantsToJump;
     private bool movingLeft;
@@ -59,13 +73,13 @@ public class PlayerController : MonoBehaviour
         else
         {
             if (
-                Physics.Raycast(transform.position, Vector3.up, 0.55f, layerMask) || 
-                Physics.Raycast(transform.position, Vector3.left, 0.55f, layerMask) || 
+                Physics.Raycast(transform.position, Vector3.up, 0.55f, layerMask) ||
+                Physics.Raycast(transform.position, Vector3.left, 0.55f, layerMask) ||
                 Physics.Raycast(transform.position, Vector3.right, 0.55f, layerMask))
             {
                 isTouchingSurface = true;
             }
-            else isTouchingSurface= false;
+            else isTouchingSurface = false;
         }
     }
     private void FixedUpdate()
@@ -75,20 +89,32 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
 
-        if (movingLeft)
+        if (movingLeft && !inOrbit)
         {
+  
             if (isGrounded)
                 rb.AddForce(moveForce * Vector3.left, ForceMode.Force);
             else
                 rb.AddForce(airMoveForce * Vector3.left, ForceMode.Force);
         }
 
-        if (movingRight)
+        if (movingRight && !inOrbit)
         {
             if (isGrounded)
                 rb.AddForce(moveForce * Vector3.right, ForceMode.Force);
             else
                 rb.AddForce(airMoveForce * Vector3.right, ForceMode.Force);
+        }
+
+        if (movingLeft && inOrbit)
+        {
+            MoveInOrbit(-moveSpeed);
+
+        }
+
+        if (movingRight && inOrbit)
+        {
+            MoveInOrbit(moveSpeed);
         }
 
     }
@@ -98,76 +124,99 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(jumpForce * Vector3.up, ForceMode.Impulse);
         wantsToJump = false;
     }
-    
+
     // Update is called once per frame
     void Update()
     {
         CheckTouchingSurface();
 
-        if (playerNumber == 1)
+
+        
+
+        //Sticking to Walls
+        if (isTouchingSurface && Input.GetKey(stickKey))
         {
-            //Jumping
-            if (isGrounded && Input.GetKeyDown(jumpKeyPlayer1))
-            {
-                wantsToJump = true;
-            }
-
-            //Sticking to Walls
-            if (isTouchingSurface && Input.GetKey(stickKeyPlayer1))
-            {
-                rb.isKinematic = true;
-            }
-            else
-            {
-                rb.isKinematic = false;
-            }
-
-            //Movement
-            if (Input.GetKey(moveLeftKeyPlayer1))
-            {
-                movingLeft = true;
-            }
-            else movingLeft = false;
-
-            if (Input.GetKey(moveRightKeyPlayer1))
-            {
-                movingRight = true;
-            }
-            else movingRight = false;
+            rb.isKinematic = true;
+            orbit.SetActive(true);
+            isFrozen = true;
         }
         else
         {
-            //Jumping
-            if (isGrounded && Input.GetKeyDown(jumpKeyPlayer2))
+            rb.isKinematic = false;
+            orbit.SetActive(false);
+            isFrozen = false;
+        }
+        if (isFrozen) return;
+        //Orbit
+        if (Input.GetKey(holdKey) && orbitClose)
+        {
+            if (!inOrbit)
             {
-                wantsToJump = true;
+                MoveInOrbit(0);
+                rb.linearVelocity = Vector3.zero;
             }
 
-            //Sticking to Walls
-            if (isTouchingSurface && Input.GetKey(stickKeyPlayer2))
-            {
-                rb.isKinematic = true;
-            }
-            else
-            {
-                rb.isKinematic = false;
-            }
-
-            //Movement
-            if (Input.GetKey(moveLeftKeyPlayer2))
-            {
-                movingLeft = true;
-            }
-            else movingLeft = false;
-
-            if (Input.GetKey(moveRightKeyPlayer2))
-            {
-                movingRight = true;
-            }
-            else movingRight = false;
+            inOrbit = true;
+            rb.useGravity = false;
+            
         }
 
+        else
+        {
+            inOrbit = false;
+            rb.useGravity = true;
+        }
+
+        
+
+        //Jumping
+        if (isGrounded && Input.GetKeyDown(jumpKey) && !inOrbit)
+        {
+            wantsToJump = true;
+        }
+
+        //Movement
+        if (Input.GetKey(moveLeftKey))
+        {
+            if (isFrozen) return;
+        
+            else
+                movingLeft = true;
+        }
+        else movingLeft = false;
+
+        if (Input.GetKey(moveRightKey))
+        {
+            if (isFrozen) return;
+            
+            else
+                movingRight = true;
+        }
+        else movingRight = false;
+
     }
+
+    private void MoveInOrbit(float rotationAngle)
+    {
+        float tangle = Vector3.SignedAngle(Vector3.right, transform.position - otherPlayer.position, Vector3.forward);
+
+        angle = tangle;
+
+        angle += rotationAngle * Time.fixedDeltaTime;
+
+        Vector3 rotatedPosition = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
+
+        Vector3 newPosition = rotatedPosition + otherPlayer.position;
+
+        Vector3 difference = newPosition - transform.position;
+
+        Debug.Log(difference);
+
+        transform.Translate(difference, Space.World);
+    }
+
+
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -175,5 +224,17 @@ public class PlayerController : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+        if (other.CompareTag("Orbit"))
+        {
+            orbitClose = true;
+        }
     }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Orbit"))
+        {
+            orbitClose = false;
+        }
+    }
+
 }
