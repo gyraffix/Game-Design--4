@@ -139,7 +139,7 @@ MonoBehaviour:
   playerNumber: 2
   moveForce: 5
   airMoveForce: 2
-  jumpForce: 5
+  jumpForce: 7
 --- !u!1 &965026158220709463
 GameObject:
   m_ObjectHideFlags: 0
