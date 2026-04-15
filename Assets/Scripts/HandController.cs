@@ -54,7 +54,9 @@ public class HandController : MonoBehaviour
     {
         if (rotateDirection != 0)
         {
-            if (parentRB.isKinematic)
+            //if (otherObj == null || otherObj.GetComponent<Rigidbody>().isKinematic)
+            //if (parentRB.isKinematic)
+            if (otherObj == null || parentRB.isKinematic)
             {
                 transform.Rotate(Vector3.forward * rotateDirection * rotateForce * Time.fixedDeltaTime);
             }
@@ -69,56 +71,78 @@ public class HandController : MonoBehaviour
             {
                 hj.connectedBody = null;
                 otherObj = null;
-
+                otherHandObj = null;
             }
-            //hj.connectedAnchor = Hand.position - transform.position;
-            //hj.connectedAnchor = otherHandObj.position - otherObj.position;
         }
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    private void AttemptHandholding(Collider other)
     {
+        // If the other doesn't have a rigidbody, it's not a player
         if (other.attachedRigidbody == null) return;
 
+        // If I'm not holding hands, I don't attach
         if (!isHoldingHands) return;
 
+        // Get references to the other obj
         HandController otherHand = other.attachedRigidbody.transform.GetComponentInChildren<HandController>();
         Rigidbody otherRB = otherHand.parentRB;
 
+        // Don't wanna connect with its own parent
         if (otherRB == parentRB)
         {
             Debug.Log("Preventing parental stuff");
             return;
         }
 
-        if (otherRB.isKinematic)
-        {
-            // The other one is sticking to a wall
-            return;
-        }
 
+        // Set global references
         if (otherHandObj == null) otherHandObj = otherHand.Hand;
         if (otherObj == null)
         {
             otherObj = otherRB.transform;
             hj.connectedAnchor = otherHandObj.position - otherObj.position;
-            Debug.Log("here");
+
+            if (otherRB.isKinematic || !parentRB.isKinematic)
+            {
+                // The other one is sticking to a wall
+                return;
+            }
+
             otherHand.transform.Rotate(Vector3.forward, otherObj.eulerAngles.z, Space.Self);
+            Debug.Log("here");
+            // Rotate the other hand to match parent rotation
         }
-        //if (other.attachedRigidbody.GetComponentInChildren<HingeJoint>().connectedBody == rb) return;
-        //if (other.attachedRigidbody.GetComponentInChildren<HingeJoint>().connectedBody == parentRB) return;
-        //if (isHoldingHands) 
 
 
+        // The other player should connect with me
+        if (otherRB.isKinematic || !parentRB.isKinematic)
+        {
+            // The other one is sticking to a wall
+            return;
+        }
+
+        // If I'm attached, I connect to the other person
         if (parentRB.isKinematic)
         {
+            Debug.Log("problem");
             hj.connectedBody = otherRB;
 
         }
-
-
-        }
-
-
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        AttemptHandholding(other);
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (otherObj == null)
+        {
+            AttemptHandholding(other);
+        }
+    }
+
+
+}
